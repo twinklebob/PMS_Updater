@@ -6,8 +6,10 @@ DOWNLOADPATH="/tmp"
 LOGPATH="/tmp"
 LOGFILE="PMS_Updater.log"
 PMSPARENTPATH="/usr/local/share"
-PMSLIVEFOLDER="plexmediaserver-plexpass"
-PMSBAKFOLDER="plexmediaserver-plexpass.bak"
+PMSPASSLIVEFOLDER="plexmediaserver-plexpass"
+PMSBASICLIVEFOLDER="plexmediaserver"
+PMSPASSBAKFOLDER="plexmediaserver-plexpass.bak"
+PMSBASICBAKFOLDER="plexmediaserver.bak"
 CERTFILE="/usr/local/share/certs/ca-root-nss.crt"
 AUTOUPDATE=0
 FORCEUPDATE=0
@@ -186,6 +188,17 @@ findLatest()
 ##    install
 applyUpdate()
 {
+    if [ $PLEXPASS = 1 ]; then {
+        local PMSLIVEFOLDER=$PMSPASSLIVEFOLDER;
+        local PMSBAKFOLDER=$PMSPASSBAKFOLDER;
+    } else {
+        local PMSLIVEFOLDER=$PMSBASICLIVEFOLDER;
+        local PMSBAKFOLDER=$PMSBASICBAKFOLDER;
+    } fi
+    if [ $VERBOSE = 1 ]; then {
+        echo Using PMSLIVEFOLDER $PMSLIVEFOLDER;
+        echo Using PMSBAKFOLDER $PMSBAKFOLDER;
+    } fi
 
     echo Removing previous PMS Backup ..... | LogMsg -n
     rm -rf $PMSPARENTPATH/$PMSBAKFOLDER 2>&1 | LogMsg
@@ -230,6 +243,13 @@ do
      esac
 done
 
+if [ $PLEXPASS = 1 ]; then {
+    local PMSLIVEFOLDER=$PMSPASSLIVEFOLDER;
+    local PMSBAKFOLDER=$PMSPASSBAKFOLDER;
+} else {
+    local PMSLIVEFOLDER=$PMSBASICLIVEFOLDER;
+    local PMSBAKFOLDER=$PMSBASICBAKFOLDER;
+} fi
 # Get the current version
 CURRENTVER=`export LD_LIBRARY_PATH=$PMSPARENTPATH/$PMSLIVEFOLDER; $PMSPARENTPATH/$PMSLIVEFOLDER/Plex\ Media\ Server --version`
 if [ $REMOVE = 1 ]; then removeOlder; fi
