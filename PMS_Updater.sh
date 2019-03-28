@@ -10,6 +10,8 @@ PMSPASSLIVEFOLDER="plexmediaserver-plexpass"
 PMSBASICLIVEFOLDER="plexmediaserver"
 PMSPASSBAKFOLDER="plexmediaserver-plexpass.bak"
 PMSBASICBAKFOLDER="plexmediaserver.bak"
+SERVICEPLEXPASS="plexmediaserver_plexpass"
+SERVICEBASIC="plexmediaserver"
 CERTFILE="/usr/local/share/certs/ca-root-nss.crt"
 AUTOUPDATE=0
 FORCEUPDATE=0
@@ -191,9 +193,11 @@ applyUpdate()
     if [ $PLEXPASS = 1 ]; then {
         local PMSLIVEFOLDER=$PMSPASSLIVEFOLDER;
         local PMSBAKFOLDER=$PMSPASSBAKFOLDER;
+        local SERVICE=$SERVICEPLEXPASS;
     } else {
         local PMSLIVEFOLDER=$PMSBASICLIVEFOLDER;
         local PMSBAKFOLDER=$PMSBASICBAKFOLDER;
+        local SERVICE=$SERVICEBASIC;
     } fi
     if [ $VERBOSE = 1 ]; then {
         echo Using PMSLIVEFOLDER $PMSLIVEFOLDER;
@@ -204,7 +208,7 @@ applyUpdate()
     rm -rf $PMSPARENTPATH/$PMSBAKFOLDER 2>&1 | LogMsg
     echo Done. | LogMsg -f
     echo Stopping Plex Media Server .....| LogMsg -n
-    service plexmediaserver_plexpass stop 2>&1
+    service $SERVICE stop 2>&1
     echo Done. | LogMsg -f
     echo Moving current Plex Media Server to backup location .....| LogMsg -n
     mv $PMSPARENTPATH/$PMSLIVEFOLDER/ $PMSPARENTPATH/$PMSBAKFOLDER/ 2>&1 | LogMsg
@@ -222,7 +226,7 @@ applyUpdate()
     ln -s $PMSPARENTPATH/$PMSLIVEFOLDER/Plex\ Media\ Server $PMSPARENTPATH/$PMSLIVEFOLDER/Plex_Media_Server 2>&1 | LogMsg
     ln -s $PMSPARENTPATH/$PMSLIVEFOLDER/libpython2.7.so.1 $PMSPARENTPATH/$PMSLIVEFOLDER/libpython2.7.so 2>&1 | LogMsg
     echo Starting Plex Media Server .....| LogMsg -n
-    service plexmediaserver_plexpass start
+    service $SERVICE start
     echo Done. | LogMsg -f
 }
 
@@ -244,11 +248,11 @@ do
 done
 
 if [ $PLEXPASS = 1 ]; then {
-    local PMSLIVEFOLDER=$PMSPASSLIVEFOLDER;
-    local PMSBAKFOLDER=$PMSPASSBAKFOLDER;
+    PMSLIVEFOLDER=$PMSPASSLIVEFOLDER;
+    PMSBAKFOLDER=$PMSPASSBAKFOLDER;
 } else {
-    local PMSLIVEFOLDER=$PMSBASICLIVEFOLDER;
-    local PMSBAKFOLDER=$PMSBASICBAKFOLDER;
+    PMSLIVEFOLDER=$PMSBASICLIVEFOLDER;
+    PMSBAKFOLDER=$PMSBASICBAKFOLDER;
 } fi
 # Get the current version
 CURRENTVER=`export LD_LIBRARY_PATH=$PMSPARENTPATH/$PMSLIVEFOLDER; $PMSPARENTPATH/$PMSLIVEFOLDER/Plex\ Media\ Server --version`
